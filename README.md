@@ -6,7 +6,7 @@ A real-time gas monitoring system for warehouses and industrial plants using Ard
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green?style=for-the-badge&logo=node.js)
 ![Arduino](https://img.shields.io/badge/Arduino-Compatible-blue?style=for-the-badge&logo=arduino)
 
-## 📸 Dashboard Preview
+##  Dashboard Preview
 
 ![Falco Task Dashboard](assets/Screenshot%202025-12-07%20204553.png)
 
