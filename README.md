@@ -1,10 +1,14 @@
-# Gas Monitoring Dashboard
+# Falco Task - Gas Monitoring Dashboard
 
 A real-time gas monitoring system for warehouses and industrial plants using Arduino with MQ2 sensor. Features a beautiful, industrial-themed dashboard with live data visualization, alerts, and multi-zone support.
 
 ![Dashboard Preview](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green?style=for-the-badge&logo=node.js)
 ![Arduino](https://img.shields.io/badge/Arduino-Compatible-blue?style=for-the-badge&logo=arduino)
+
+## 📸 Dashboard Preview
+
+![Falco Task Dashboard](assets/Screenshot%202025-12-07%20204553.png)
 
 ##  System Architecture
 
