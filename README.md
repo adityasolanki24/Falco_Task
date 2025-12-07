@@ -1,4 +1,4 @@
-# 🏭 FALCOSENSE - Gas Monitoring Dashboard
+# Gas Monitoring Dashboard
 
 A real-time gas monitoring system for warehouses and industrial plants using Arduino with MQ2 sensor. Features a beautiful, industrial-themed dashboard with live data visualization, alerts, and multi-zone support.
 
@@ -6,7 +6,7 @@ A real-time gas monitoring system for warehouses and industrial plants using Ard
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green?style=for-the-badge&logo=node.js)
 ![Arduino](https://img.shields.io/badge/Arduino-Compatible-blue?style=for-the-badge&logo=arduino)
 
-## 📋 System Architecture
+##  System Architecture
 
 ```
 ┌─────────────┐     USB Serial      ┌─────────────┐     WebSocket      ┌─────────────┐
@@ -15,7 +15,7 @@ A real-time gas monitoring system for warehouses and industrial plants using Ard
 └─────────────┘                     └─────────────┘                     └─────────────┘
 ```
 
-## ✨ Features
+##  Features
 
 - **Real-time Monitoring** - Live gas level readings updated every 500ms
 - **Visual Gauges** - Animated gauge showing PPM levels with color-coded status
@@ -25,7 +25,7 @@ A real-time gas monitoring system for warehouses and industrial plants using Ard
 - **Mock Mode** - Test the dashboard without actual hardware
 - **Responsive Design** - Works on desktop and mobile devices
 
-## 🛠️ Hardware Requirements
+##  Hardware Requirements
 
 - Arduino Uno/Nano/Mega (or compatible)
 - MQ2 Gas Sensor Module
@@ -48,7 +48,7 @@ Buzzer (optional)
    -          →     GND
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Clone and Install
 
@@ -100,7 +100,7 @@ npm run dev
 
 Navigate to: **http://localhost:3000**
 
-## 📊 Dashboard Features
+##  Dashboard Features
 
 ### Main Display
 - **Large Gauge** - Real-time PPM visualization with gradient coloring
@@ -136,7 +136,7 @@ const int GAS_THRESHOLD_DANGER = 500;    // Danger level (raw value)
 
 The MQ2 sensor requires a 2-minute warm-up period for accurate readings. The dashboard shows warm-up progress during this time.
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -146,7 +146,7 @@ The MQ2 sensor requires a 2-minute warm-up period for accurate readings. The das
 | `/api/alerts` | GET | Alert log (last 50) |
 | `/api/config` | GET | Server configuration |
 
-## 🔧 WebSocket Events
+## WebSocket Events
 
 ### Client → Server
 - `updateThresholds` - Update warning/danger thresholds
@@ -157,7 +157,7 @@ The MQ2 sensor requires a 2-minute warm-up period for accurate readings. The das
 - `alert` - Alert notifications
 - `status` - Sensor status updates (warming up, ready)
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 gas-monitoring-dashboard/
@@ -172,23 +172,8 @@ gas-monitoring-dashboard/
 └── README.md              # This file
 ```
 
-## 🎨 Customization
 
-### Theme Colors
-
-Edit CSS variables in `public/styles.css`:
-
-```css
-:root {
-    --bg-primary: #0a0e14;
-    --accent-primary: #00d9ff;
-    --status-normal: #10b981;
-    --status-warning: #f59e0b;
-    --status-danger: #ef4444;
-}
-```
-
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Serial Port Not Found
 
@@ -209,18 +194,9 @@ sudo usermod -a -G dialout $USER
 - Ensure proper ventilation
 - Check wiring connections
 
-## 📄 License
+##  License
 
 MIT License - Feel free to use and modify for your projects!
 
-## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
----
-
-**Built with ❤️ for industrial safety monitoring**
 
