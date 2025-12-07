@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falco Task | Gas Monitoring Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    
+    <!-- Alert Banner -->
+    <div id="alertBanner" class="alert-banner hidden">
+        <div class="alert-content">
+            <span class="alert-icon">⚠️</span>
+            <span class="alert-message">System Normal</span>
+            <button class="alert-dismiss" onclick="dismissAlert()">×</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-text">
+                        <h1>FALCO <span>TASK</span></h1>
+                        <p>Gas Monitoring Dashboard</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+                <div class="timestamp" id="timestamp">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <main class="main-grid">
+            <!-- Status Section -->
+            <section class="status-section">
+                <div class="section-header">
+                    <h2>SYSTEM STATUS</h2>
+                    <span class="badge" id="modeBadge">LIVE</span>
+                </div>
+                
+                <!-- Large Gauge -->
+                <div class="gauge-container">
+                    <div class="gauge" id="mainGauge">
+                        <svg viewBox="0 0 200 120" class="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#10b981"/>
+                                    <stop offset="50%" style="stop-color:#f59e0b"/>
+                                    <stop offset="100%" style="stop-color:#ef4444"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Background arc -->
+                            <path class="gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100" 
+                                  fill="none" stroke="#1e293b" stroke-width="12" stroke-linecap="round"/>
+                            <!-- Value arc -->
+                            <path class="gauge-value" id="gaugeArc" d="M 20 100 A 80 80 0 0 1 180 100" 
+                                  fill="none" stroke="url(#gaugeGradient)" stroke-width="12" 
+                                  stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                            <!-- Threshold markers (positioned on arc: warning=300, danger=500 out of 1023) -->
+                            <circle cx="52" cy="36" r="4" fill="#f59e0b" class="threshold-marker"/>
+                            <circle cx="97" cy="20" r="4" fill="#ef4444" class="threshold-marker"/>
+                        </svg>
+                        <div class="gauge-center">
+                            <span class="gauge-value-text" id="ppmValue">0</span>
+                            <span class="gauge-unit">PPM</span>
+                        </div>
+                        <div class="gauge-labels">
+                            <span>0</span>
+                            <span>5000</span>
+                            <span>10000</span>
+                        </div>
+                    </div>
+                    <div class="status-indicator" id="statusIndicator">
+                        <span class="status-ring"></span>
+                        <span class="status-label">NORMAL</span>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Raw Value</span>
+                        <span class="stat-value" id="rawValue">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Voltage</span>
+                        <span class="stat-value" id="voltageValue">0.00V</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Sensor</span>
+                        <span class="stat-value" id="sensorType">MQ2</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section">
+                <div class="section-header">
+                    <h2>REAL-TIME MONITORING</h2>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" data-range="50">1 MIN</button>
+                        <button class="chart-btn" data-range="100">2 MIN</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="gasChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Thresholds Section -->
+            <section class="thresholds-section">
+                <div class="section-header">
+                    <h2>THRESHOLD LEVELS</h2>
+                </div>
+                <div class="threshold-bars">
+                    <div class="threshold-bar">
+                        <div class="threshold-info">
+                            <span class="threshold-label">
+                                <span class="dot warning"></span>
+                                Warning Level
+                            </span>
+                            <span class="threshold-value" id="warningThreshold">300</span>
+                        </div>
+                        <div class="threshold-progress">
+                            <div class="progress-fill warning" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="threshold-bar">
+                        <div class="threshold-info">
+                            <span class="threshold-label">
+                                <span class="dot danger"></span>
+                                Danger Level
+                            </span>
+                            <span class="threshold-value" id="dangerThreshold">500</span>
+                        </div>
+                        <div class="threshold-progress">
+                            <div class="progress-fill danger" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="threshold-bar">
+                        <div class="threshold-info">
+                            <span class="threshold-label">
+                                <span class="dot current"></span>
+                                Current Level
+                            </span>
+                            <span class="threshold-value" id="currentLevel">0</span>
+                        </div>
+                        <div class="threshold-progress">
+                            <div class="progress-fill current" id="currentProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Section -->
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2>ALERT LOG</h2>
+                    <span class="alert-count" id="alertCount">0</span>
+                </div>
+                <div class="alerts-list" id="alertsList">
+                    <div class="no-alerts">
+                        <span class="no-alerts-icon">✓</span>
+                        <span>No alerts recorded</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Plant Overview -->
+            <section class="plant-section">
+                <div class="section-header">
+                    <h2>PLANT ZONES</h2>
+                </div>
+                <div class="plant-grid">
+                    <div class="zone-card active" id="zone1">
+                        <div class="zone-header">
+                            <span class="zone-name">Zone A</span>
+                            <span class="zone-status normal">●</span>
+                        </div>
+                        <span class="zone-reading">Main Sensor</span>
+                        <span class="zone-value" id="zone1Value">0 PPM</span>
+                    </div>
+                    <div class="zone-card" id="zone2">
+                        <div class="zone-header">
+                            <span class="zone-name">Zone B</span>
+                            <span class="zone-status offline">●</span>
+                        </div>
+                        <span class="zone-reading">No Sensor</span>
+                        <span class="zone-value">-- PPM</span>
+                    </div>
+                    <div class="zone-card" id="zone3">
+                        <div class="zone-header">
+                            <span class="zone-name">Zone C</span>
+                            <span class="zone-status offline">●</span>
+                        </div>
+                        <span class="zone-reading">No Sensor</span>
+                        <span class="zone-value">-- PPM</span>
+                    </div>
+                    <div class="zone-card" id="zone4">
+                        <div class="zone-header">
+                            <span class="zone-name">Zone D</span>
+                            <span class="zone-status offline">●</span>
+                        </div>
+                        <span class="zone-reading">No Sensor</span>
+                        <span class="zone-value">-- PPM</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span>Falco Task - Gas Monitoring System v1.0</span>
+            </div>
+            <div class="footer-right">
+                <span id="serverInfo">Connecting...</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Audio for alerts -->
+    <audio id="alertSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Mi4eBc2loa3Z8gIF8dW9vcnt/f3t2cXBzeH1/fn17d3RzdXh7fHt6eHZ1dnd5ent6eXh2dXZ3eHp6eXh3dnV2d3h5eXl4d3Z2dnd4eXl5eHd2dnZ3eHl5eXh3d3Z2d3h5eXl4d3d3dnd4eXl5eHd3d3Z3eHl5eXh4d3d3d3h5eXl4eHd3d3d4eXl5eHh4d3d3eHl5eXl4eHd4d3h5eXl5eHh3eHd4eXl5eXh4eHh4eHl5eXl4eHh4eHh5eXl5eXh4eHh4eHl5eXl4eHh4eHh5eXl5" type="audio/wav">
+    </audio>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

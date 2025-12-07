@@ -1,0 +1,25 @@
+{
+  "name": "gas-monitoring-dashboard",
+  "version": "1.0.0",
+  "description": "Real-time gas monitoring dashboard for warehouse/plant using MQ2 sensor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --mock"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "serialport": "^12.0.0",
+    "socket.io": "^4.7.2"
+  },
+  "keywords": [
+    "arduino",
+    "mq2",
+    "gas-sensor",
+    "iot",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+
